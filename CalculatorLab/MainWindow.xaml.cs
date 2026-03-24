@@ -1,11 +1,9 @@
-﻿using CalculatorLab;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CalculatorLab
 {
-
     public partial class MainWindow : Window
     {
         private readonly CalculatorModel _model = new();
@@ -14,29 +12,36 @@ namespace CalculatorLab
         {
             InitializeComponent();
             UpdateDisplay();
-            FocusManager.SetFocusedElement(this, this); // Автофокус на вікно
-            this.Focus(); // Додатковий фокус
+            this.Focus();
         }
 
+        // ── Display ────────────────────────────────────────────────────────────
 
         private void UpdateDisplay()
         {
             Display.Text = _model.DisplayText;
+            ExpressionText.Text = _model.ExpressionText;
+
+            // Підсвічуємо кнопки Undo/Redo якщо вони є у XAML
+            if (BtnUndo is Button u) u.IsEnabled = _model.CanUndo;
+            if (BtnRedo is Button r) r.IsEnabled = _model.CanRedo;
         }
+
+        // ── Button handlers ────────────────────────────────────────────────────
 
         private void NumberButton_Click(object sender, RoutedEventArgs e)
         {
-            var button = (Button)sender;
-            if (button.Content.ToString() == ".")
+            var content = ((Button)sender).Content.ToString()!;
+            if (content == ".")
                 _model.AppendDot();
             else
-                _model.AppendNumber(button.Content.ToString());
+                _model.AppendNumber(content);
             UpdateDisplay();
         }
 
         private void OperatorButton_Click(object sender, RoutedEventArgs e)
         {
-            _model.SetOperator(((Button)sender).Content.ToString());
+            _model.SetOperator(((Button)sender).Content.ToString()!);
             UpdateDisplay();
         }
 
@@ -46,65 +51,91 @@ namespace CalculatorLab
             UpdateDisplay();
         }
 
-        private void CEButton_Click(object sender, RoutedEventArgs e)
+        private void BackspaceButton_Click(object sender, RoutedEventArgs e)
         {
-            _model.ClearEntry(); // Поки просте CE
+            _model.Backspace();
             UpdateDisplay();
         }
 
+        private void ToggleSignButton_Click(object sender, RoutedEventArgs e)
+        {
+            _model.ToggleSign();
+            UpdateDisplay();
+        }
+
+        private void PercentButton_Click(object sender, RoutedEventArgs e)
+        {
+            _model.Percent();
+            UpdateDisplay();
+        }
+
+        // CE = Undo
+        private void CEButton_Click(object sender, RoutedEventArgs e)
+        {
+            _model.Undo();
+            UpdateDisplay();
+        }
+
+        // C = ClearAll
         private void CButton_Click(object sender, RoutedEventArgs e)
         {
             _model.ClearAll();
             UpdateDisplay();
         }
 
-        // === Клавіатура ===
+        private void UndoButton_Click(object sender, RoutedEventArgs e)
+        {
+            _model.Undo();
+            UpdateDisplay();
+        }
+
+        private void RedoButton_Click(object sender, RoutedEventArgs e)
+        {
+            _model.Redo();
+            UpdateDisplay();
+        }
+
+        // ── Keyboard ───────────────────────────────────────────────────────────
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            // Ігноруємо, якщо фокус не на вікні або є помилка
-            if (_model.DisplayText == "Error") return;
+            if (_model.DisplayText == "Error" && e.Key != Key.Escape && e.Key != Key.Delete)
+                return;
 
-            e.Handled = true; // Блокуємо повторну обробку
+            e.Handled = true;
+            var mods = Keyboard.Modifiers;
 
-                              // === ПРІОРИТЕТ: Оператори ===
-            if (Keyboard.Modifiers == ModifierKeys.Shift)
+            // Оператори з Shift
+            if (mods == ModifierKeys.Shift)
             {
-                // Операторы: поддержка NumPad и основных клавиш как в Windows Calculator
                 switch (e.Key)
                 {
-                    // Плюс: Numpad '+' или Shift+'=' (Key.OemPlus с Shift)
+                    case Key.OemPlus:                        // Shift+= → +
                     case Key.Add:
-                    case Key.OemPlus when (Keyboard.Modifiers & ModifierKeys.Shift) != 0:
-                        _model.SetOperator("+");
-                        return;
+                        _model.SetOperator("+"); UpdateDisplay(); return;
 
-                    // Минус: Numpad '-' или '-' на основной клавиатуре
-                    case Key.Subtract:
-                    case Key.OemMinus:
-                        _model.SetOperator("−");
-                        return;
-
-                    // Умножение: Numpad '*' или Shift+'8' (Key.D8 с Shift)
+                    case Key.D8:                             // Shift+8 → ×
                     case Key.Multiply:
-                    case Key.D8 when (Keyboard.Modifiers & ModifierKeys.Shift) != 0:
-                        _model.SetOperator("×");
-                        return;
+                        _model.SetOperator("×"); UpdateDisplay(); return;
 
-                    // Деление: Numpad '/' или '/' на основной клавиатуре (Oem2 / OemQuestion)
-                    case Key.Divide:
-                    case Key.OemQuestion:
-                    case Key.OemBackslash: // на некоторых раскладках встречается как '/'
-                        _model.SetOperator("÷");
-                        return;
+                    case Key.D5:                             // Shift+5 → %
+                        _model.Percent(); UpdateDisplay(); return;
                 }
             }
 
-            
+            // Ctrl+Z / Ctrl+Y
+            if (mods == ModifierKeys.Control)
+            {
+                switch (e.Key)
+                {
+                    case Key.Z: _model.Undo(); UpdateDisplay(); return;
+                    case Key.Y: _model.Redo(); UpdateDisplay(); return;
+                }
+            }
 
             switch (e.Key)
             {
-                // Цифри 0-9
+                // Цифри
                 case Key.D0 or Key.NumPad0: _model.AppendNumber("0"); break;
                 case Key.D1 or Key.NumPad1: _model.AppendNumber("1"); break;
                 case Key.D2 or Key.NumPad2: _model.AppendNumber("2"); break;
@@ -116,22 +147,34 @@ namespace CalculatorLab
                 case Key.D8 or Key.NumPad8: _model.AppendNumber("8"); break;
                 case Key.D9 or Key.NumPad9: _model.AppendNumber("9"); break;
 
-                // Крапка (десяткова)
-                case Key.Decimal or Key.OemPeriod: _model.AppendDot(); break;
+                // Крапка
+                case Key.Decimal or Key.OemPeriod or Key.OemComma: _model.AppendDot(); break;
 
+                // Оператори (без Shift / NumPad)
+                case Key.Add: _model.SetOperator("+"); break;
+                case Key.Subtract: _model.SetOperator("−"); break;
+                case Key.OemMinus: _model.SetOperator("−"); break;
+                case Key.Multiply: _model.SetOperator("×"); break;
+                case Key.Divide: _model.SetOperator("÷"); break;
+                case Key.OemQuestion: _model.SetOperator("÷"); break;  // '/' на деяких розкладках
 
-                // Enter = обчислення
+                // Enter / = → обчислення
                 case Key.Enter or Key.Return: _model.Calculate(); break;
+                case Key.OemPlus when mods == ModifierKeys.None: _model.Calculate(); break; // '=' без Shift
 
-                // CE (Backspace)
-                case Key.Back: _model.ClearEntry(); break;
+                // Backspace → видалити останній символ
+                case Key.Back: _model.Backspace(); break;
 
-                // C (Escape)
-                case Key.Escape: _model.ClearAll(); break;
+                // Escape → ClearAll
+                case Key.Escape or Key.Delete: _model.ClearAll(); break;
+
+                // F9 → зміна знаку (як у Windows Calculator)
+                case Key.F9: _model.ToggleSign(); break;
+
+                default: e.Handled = false; return;
             }
 
             UpdateDisplay();
         }
-
     }
 }
