@@ -13,6 +13,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -46,43 +47,52 @@
                 Content="&#x21AA; Redo" Click="RedoButton_Click"
                 Margin="2" FontSize="28"
                 Background="LightYellow" IsEnabled="False"/>
+        <!-- xⁿ ˣ√  ln  +/- -->
+
+        <Button Grid.Row="3" Grid.Column="0" Content="+/-" Click="ToggleSignButton_Click"   Margin="2" FontSize="48" Background="LightBlue"/>
+        
+        <Button Grid.Row="3" Grid.Column="1" Content="ln"  Click="LnButton_Click"       Margin="2" FontSize="48" Background="LightBlue"/>
+
+      <Button Grid.Row="3" Grid.Column="2" Content="ˣ√"  Click="OperatorButton_Click" Margin="2" FontSize="48" Background="LightBlue"/>
+
+       <Button Grid.Row="3" Grid.Column="3" Content="xⁿ"  Click="OperatorButton_Click" Margin="2" FontSize="48" Background="LightBlue"/>
+
 
         <!-- 7 8 9 ÷ -->
-        <Button Grid.Row="3" Grid.Column="0" Content="7"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="3" Grid.Column="1" Content="8"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="3" Grid.Column="2" Content="9"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="3" Grid.Column="3" Content="&#247;" Click="OperatorButton_Click"  Margin="2" FontSize="48"/>
+        <Button Grid.Row="4" Grid.Column="0" Content="7"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
+        <Button Grid.Row="4" Grid.Column="1" Content="8"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
+        <Button Grid.Row="4" Grid.Column="2" Content="9"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
+        <Button Grid.Row="4" Grid.Column="3" Content="&#247;" Click="OperatorButton_Click"  Margin="2" FontSize="48"/>
 
         <!-- 4 5 6 × -->
-        <Button Grid.Row="4" Grid.Column="0" Content="4"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="4" Grid.Column="1" Content="5"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="4" Grid.Column="2" Content="6"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="4" Grid.Column="3" Content="&#215;" Click="OperatorButton_Click"  Margin="2" FontSize="48"/>
+        <Button Grid.Row="5" Grid.Column="0" Content="4"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
+        <Button Grid.Row="5" Grid.Column="1" Content="5"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
+        <Button Grid.Row="5" Grid.Column="2" Content="6"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
+        <Button Grid.Row="5" Grid.Column="3" Content="&#215;" Click="OperatorButton_Click"  Margin="2" FontSize="48"/>
 
         <!-- 1 2 3 − -->
-        <Button Grid.Row="5" Grid.Column="0" Content="1"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="5" Grid.Column="1" Content="2"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="5" Grid.Column="2" Content="3"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="5" Grid.Column="3" Content="&#8722;" Click="OperatorButton_Click" Margin="2" FontSize="48"/>
+        <Button Grid.Row="6" Grid.Column="0" Content="1"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
+        <Button Grid.Row="6" Grid.Column="1" Content="2"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
+        <Button Grid.Row="6" Grid.Column="2" Content="3"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
+        <Button Grid.Row="6" Grid.Column="3" Content="&#8722;" Click="OperatorButton_Click" Margin="2" FontSize="48"/>
 
-        <!-- +/- 0 . + -->
-        <Button Grid.Row="6" Grid.Column="0" Content="+/-" Click="ToggleSignButton_Click"   Margin="2" FontSize="36"/>
-        <Button Grid.Row="6" Grid.Column="1" Content="0"   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="6" Grid.Column="2" Content="."   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
-        <Button Grid.Row="6" Grid.Column="3" Content="+"   Click="OperatorButton_Click"     Margin="2" FontSize="48"/>
+        <!-- +/- 0 . -->
+        <Button Grid.Row="7" Grid.Column="0" Content="0"   Click="NumberButton_Click"       Margin="2" FontSize="48" Grid.ColumnSpan="2"/>
+        <Button Grid.Row="7" Grid.Column="2" Content="."   Click="NumberButton_Click"       Margin="2" FontSize="48"/>
+        <Button Grid.Row="7" Grid.Column="3" Content="+"   Click="OperatorButton_Click"     Margin="2" FontSize="48"/>
 
         <!-- CE  C  ⌫  = -->
-        <Button Grid.Row="7" Grid.Column="0" Content="CE"
+        <Button Grid.Row="8" Grid.Column="0" Content="CE"
                 Click="CEButton_Click" Margin="2"
                 Background="LightCoral" FontSize="48"
                 ToolTip="Undo — повернути останню дію"/>
-        <Button Grid.Row="7" Grid.Column="1" Content="C"
+        <Button Grid.Row="8" Grid.Column="1" Content="C"
                 Click="CButton_Click"  Margin="2"
                 Background="LightCoral" FontSize="48"/>
-        <Button Grid.Row="7" Grid.Column="2" Content="&#x232B;"
+        <Button Grid.Row="8" Grid.Column="2" Content="&#x232B;"
                 Click="BackspaceButton_Click" Margin="2"
                 Background="LightCoral" FontSize="48"/>
-        <Button Grid.Row="7" Grid.Column="3" Content="="
+        <Button Grid.Row="8" Grid.Column="3" Content="="
                 Click="EqualsButton_Click" Margin="2" FontSize="48"/>
     </Grid>
 </Window>

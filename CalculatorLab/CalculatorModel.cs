@@ -29,7 +29,6 @@ namespace CalculatorLab
         public bool CanUndo => _undoStack.Count > 0;
         public bool CanRedo => _redoStack.Count > 0;
 
-        /// <summary>Зберігає поточний стан перед виконанням команди.</summary>
         public void Push(CalculatorState stateBefore)
         {
             _undoStack.Push(stateBefore);
@@ -50,7 +49,7 @@ namespace CalculatorLab
             return next;
         }
 
-        public void Clear()
+        public void StackClear()
         {
             _undoStack.Clear();
             _redoStack.Clear();
@@ -92,6 +91,10 @@ namespace CalculatorLab
     {
         public void Execute(CalculatorModel m) => m.PercentInternal();
     }
+    public class NaturalLogCommand : ICalculatorCommand
+    {
+        public void Execute(CalculatorModel m) => m.NaturalLogInternal();
+    }
 
     // ── 5. CalculatorModel ────────────────────────────────────────────────────
     public class CalculatorModel
@@ -121,6 +124,9 @@ namespace CalculatorLab
         public void Backspace() => Execute(new BackspaceCommand());
         public void ToggleSign() => Execute(new ToggleSignCommand());
         public void Percent() => Execute(new PercentCommand());
+        public void NaturalLog() => Execute(new NaturalLogCommand());
+
+
 
         public void Undo()
         {
@@ -136,7 +142,7 @@ namespace CalculatorLab
 
         public void ClearAll()
         {
-            _history.Clear();
+            _history.StackClear();
             _state = new CalculatorState();
         }
 
@@ -185,6 +191,8 @@ namespace CalculatorLab
             var s = _state;
             if (s.HasError || s.DisplayText.Contains('.')) return;
 
+            bool freshStart = s.NewExpression || s.Expression.TrimEnd().EndsWith("=");
+
             if (s.NewEntry)
             {
                 _state = s with
@@ -192,7 +200,7 @@ namespace CalculatorLab
                     DisplayText = "0.",
                     NewEntry = false,
                     NewExpression = false,
-                    Expression = s.NewExpression || s.Expression.TrimEnd().EndsWith("=") ? "0." : s.Expression + "0."
+                    Expression = freshStart ? "0." : s.Expression + "0."
                 };
             }
             else
@@ -243,6 +251,8 @@ namespace CalculatorLab
                 "−" => s.CurrentValue - b,
                 "×" => s.CurrentValue * b,
                 "÷" => s.CurrentValue / b,
+                "xⁿ" => Math.Pow(s.CurrentValue, b),
+                "ˣ√" => Math.Pow(s.CurrentValue, 1.0 / b),
                 _ => s.CurrentValue
             };
 
@@ -308,6 +318,25 @@ namespace CalculatorLab
             {
                 DisplayText = FormatNumber(result),
                 Expression = s.Expression.TrimEnd() + FormatNumber(result)
+            };
+        }
+        internal void NaturalLogInternal()
+        {
+            var s = _state;
+            if (s.HasError) return;
+
+            double val = GetNumber(s.DisplayText);
+            if (val <= 0)
+            {
+                _state = s with { DisplayText = "Error", HasError = true };
+                return;
+            }
+
+            double result = Math.Log(val);
+            _state = s with
+            {
+                DisplayText = FormatNumber(result),
+                Expression = "ln(" + s.DisplayText + ") ="
             };
         }
 

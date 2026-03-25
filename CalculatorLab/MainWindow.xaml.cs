@@ -69,6 +69,12 @@ namespace CalculatorLab
             UpdateDisplay();
         }
 
+        private void LnButton_Click(object sender, RoutedEventArgs e)
+        {
+            _model.NaturalLog();
+            UpdateDisplay();
+        }
+
         // CE = Undo
         private void CEButton_Click(object sender, RoutedEventArgs e)
         {
@@ -99,7 +105,7 @@ namespace CalculatorLab
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (_model.DisplayText == "Error" && e.Key != Key.Escape && e.Key != Key.Delete)
+            if (_model.DisplayText == "Error" && e.Key != Key.Escape && e.Key != Key.Delete && e.Key != Key.Back)
                 return;
 
             e.Handled = true;
